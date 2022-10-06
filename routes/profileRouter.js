@@ -1,7 +1,7 @@
 const router = require("express").Router();
 
 const { profileController } = require("../controllers");
-const loginRequired = require("../middleware/auth");
+const { loginRequired } = require("../middleware/auth");
 
 
 router.get("", loginRequired, profileController.getProfile);

@@ -1,12 +1,12 @@
 const router = require("express").Router();
 
 const { searchController } = require("../controllers");
-const { getUserId } = require("../middleware/auth");
+const { getuserId } = require("../middleware/auth");
 
 
 router.get("", searchController.getPostsByNav);
 router.get("/product", searchController.getProducts);
-router.get("/list", getUserId ,searchController.getPostLists);
+router.get("/list", getuserId ,searchController.getPostLists);
 
 
 module.exports = router;
