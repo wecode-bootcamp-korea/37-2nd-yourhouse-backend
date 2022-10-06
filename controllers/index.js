@@ -1,6 +1,8 @@
 const pingController = require("./pingController");
+const userController = require("./userController");
 
 
 module.exports = {
-    pingController
+    pingController,
+    userController
 }
