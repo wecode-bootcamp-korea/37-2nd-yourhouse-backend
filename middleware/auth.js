@@ -1,4 +1,4 @@
-const jwt = reqiuire("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const { userDao } = require("../models");
 const { BaseError } = require("../util/error");
 
@@ -6,7 +6,8 @@ const { BaseError } = require("../util/error");
 const loginRequired = async (req, res, next) => {
     try {
         const token = req.headers.authorization;
-        const { user_id } = jwt.verify(token, process.env.TOKENSECRET);
+        
+        const { user_id } = jwt.verify(token, process.env.TOKKENSECRET);
 
         const user = await userDao.getUserById( user_id )
 
@@ -15,7 +16,8 @@ const loginRequired = async (req, res, next) => {
         req.user = user;
         return next();
     } catch (err) {
-        throw new BaseError("INVALID_TOKEN", 400);
+        const error = new BaseError("INVALID_TOKEN", 400);
+        next(error)
     }
 }
 

@@ -10,7 +10,7 @@ const authUser = async ( code ) => {
     const accessToken = await auth.getKakaoToken();
     const userInfo = await auth.getKaKaoUserInfo(accessToken)
     
-    if ( !userInfo.kakao_account.email ||  !userInfo.kakao_account.profile.nickname ) throw new BaseError("KEY_ERROR", 400);
+    if ( !userInfo.kakao_account.email || !userInfo.kakao_account.profile.nickname ) throw new BaseError("KEY_ERROR", 400);
     
     let user = await userDao.getUserToSocial(userInfo.id);
 
