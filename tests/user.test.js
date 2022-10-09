@@ -15,9 +15,6 @@ describe("Social Auth", () => {
     })
 
     afterAll(async () => {
-        await appDataSource.query(`SET FOREIGN_KEY_CHECKS = 0`)
-        await appDataSource.query(`TRUNCATE users`);
-        await appDataSource.query(`SET FOREIGN_KEY_CHECKS = 1`)
         await appDataSource.destroy();
     })
 
