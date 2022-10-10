@@ -1,4 +1,4 @@
-const appDataSource = require("./dataSource");
+const appDataSource = require('./dataSource')
 
 
 const createUser = async ( user ) => {
