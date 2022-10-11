@@ -1,5 +1,5 @@
 const { BaseError } = require("../util/error")
-const appDataSource = require("./datasource")
+const { database } = require("./datasource")
 
 const posts = async(userId, sort, color, roomsize, residence, style, space, limit, offset )=> {
     const queries ={ userId, sort, color, roomsize, residence, style, space, limit, offset}
@@ -63,7 +63,7 @@ const posts = async(userId, sort, color, roomsize, residence, style, space, limi
     console.log(sortSet)
     console.log(sortSet.likes)
     console.log(sortSet.current)
-    const posts = await appDataSource.query(       
+    const result = await database.query(       
         ` 
             SELECT 
                 P.id,
@@ -73,8 +73,14 @@ const posts = async(userId, sort, color, roomsize, residence, style, space, limi
                 U1.nickname,
                 CAST(CONCAT("[", GROUP_CONCAT(DISTINCT JSON_OBJECT('inPostId', PI.id, 'image', PI.image, 'desc', PI.description)), "]") as JSON) as postinfo,
                 CAST(CONCAT("[", GROUP_CONCAT(DISTINCT JSON_OBJECT('commentId', C.id, 'comment', C.comment, 'postId', C.post_id, 'nickname', U2.nickname, 'profile', U2.profile_image)), "]")  as JSON) as commentInfo,
-                COUNT (DISTINCT U2.id) AS commentsNum,
-                COUNT (DISTINCT U3.id) AS likesNum,
+                (SELECT
+                    COUNT(*)
+                FROM comments 
+                WHERE P.id = comments.post_id) AS commentsNum,
+                (SELECT
+                    COUNT(*)
+                FROM likes
+                WHERE likes.post_id = P.id) AS likesNum,
                 CASE WHEN L2.user_id = ? THEN 1 ELSE 0 END as likeEx,
                 CASE WHEN F.follow_id = ? THEN 1 ELSE 0 END as followEx,  
                 P.create_at
@@ -87,13 +93,13 @@ const posts = async(userId, sort, color, roomsize, residence, style, space, limi
             ON PD.id = PPI.product_id
             INNER JOIN users as U1
             ON P.user_id = U1.id
-            INNER JOIN comments C
+            LEFT JOIN comments C
             ON P.id = C.post_id
-            INNER JOIN users as U2
+            LEFT JOIN users as U2
             ON U2.id = C.user_id
-            INNER JOIN likes as L
+            LEFT JOIN likes as L
             ON P.id = L.post_id
-            INNER JOIN users as U3
+            LEFT JOIN users as U3
             ON U3.id = L.user_id
             LEFT JOIN likes L2
             ON L2.post_id = P.id 
@@ -109,8 +115,9 @@ const posts = async(userId, sort, color, roomsize, residence, style, space, limi
             `, [userId, userId, userId, userId, limit, offset]
         )
             console.log(posts)
-        return posts
+        return result.fetchAll()
     }catch(err) {
+        
         console.log("aaa,",err)
         throw new BaseError(500, `INVALID_DATA_INPUT`);
     }    
@@ -118,7 +125,7 @@ const posts = async(userId, sort, color, roomsize, residence, style, space, limi
 
 const follows = async(userId, limit, offset) => {
     try{
-    const follows = await appDataSource.query(
+    const result = await database.query(
         `
         SELECT
             P.id,
@@ -160,7 +167,7 @@ const follows = async(userId, limit, offset) => {
             offset ?
     `, [userId, userId, userId, userId, limit, offset]
     )
-    return follows
+    return result.fetchAll()
     }
     catch(err) {
         console.log(err)
@@ -170,7 +177,7 @@ const follows = async(userId, limit, offset) => {
 
 const addFollow = async(userId, writerId) => {
     try{
-        const result = await appDataSource.query(
+        const result = await database.query(
             `
                 INSERT INTO follows(
                     follow_id,
@@ -178,7 +185,7 @@ const addFollow = async(userId, writerId) => {
                 )VALUES (?, ?)
             `, [userId, writerId]
         )
-        return result
+        return result.getLastInsertId()
     }catch{
         console.log(err)
         throw new BaseError(500, `INVALID_DATA_INPUT`);
@@ -187,23 +194,85 @@ const addFollow = async(userId, writerId) => {
 
 const deleteFollow = async(userId, writerId) => {
     try{
-    const deleteFollow = await appDataSource.query(
+    const result = await database.query(
         `
             DELETE FROM follows
             WHERE follow_id =?
             AND follower_id =?
         `, [userId, writerId]
     )
-    return deleteFollow
+    return result.getAffectdRows()
     }catch{
         console.log(err)
         throw new BaseError(500, `INVALID_DATA_INPUT`);
     }
 }
 
+
+const getPostDetail = async( postId ) => {
+    const result = await database.query(
+        `SELECT
+            posts.id AS postId,
+            pi.id,
+            pi.image AS main_pic_url,
+            pi.description AS text,
+            JSON_ARRAYAGG(JSON_OBJECT("productId", products.id, "name", products.name, "description", products.description, "sub_pic_url", products.image,"offset_X", ppi.offsetX, "offset_Y", ppi.offsetY)) AS products,
+            rm.size AS room_size,
+            res.type AS residence,
+            st.style,
+            sp.type AS space,
+            (SELECT
+                COUNT(*)
+            FROM comments
+            WHERE posts.id = comments.post_id) AS commentsQuantity
+        FROM posts
+        INNER JOIN posts_infomations AS pi ON posts.id = pi.post_id
+        INNER JOIN room_sizes AS rm ON pi.room_size_id = rm.id
+        INNER JOIN residences AS res ON pi.residence_id = res.id
+        INNER JOIN styles AS st ON pi.style_id = st.id
+        INNER JOIN spaces AS sp ON pi.space_id = sp.id
+        LEFT JOIN posts_products_infomations AS ppi ON pi.id = ppi.post_info_id
+        LEFT JOIN products ON ppi.product_id = products.id
+        WHERE posts.id = ?
+        GROUP BY pi.id`,
+        [ postId ]
+    )
+
+    return result.fetchAll();
+}
+
+const getHashTag = async ( id ) => {
+    const result = await database.query(
+        `SELECT
+            JSON_ARRAYAGG(name) AS hashTag
+        FROM hashtags
+        WHERE post_info_id = ?`,
+        [ id ]
+    )
+
+    return result.fetchOne().hashTag;
+}
+
+const getPostExists = async ( id ) => {
+    const result = await database.query(
+        `SELECT EXISTS(
+            SELECT
+                *
+            FROM posts
+            WHERE posts.id = ?) AS result`,
+        [ id ]
+    )
+    
+    return result.isExists();
+}
+
+
 module.exports = {
     posts,
     follows,
     addFollow,
     deleteFollow,
+    getPostDetail,
+    getHashTag,
+    getPostExists
 }

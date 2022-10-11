@@ -1,26 +1,30 @@
-const appDataSource = require("./dataSource");
+const { database } = require("./dataSource");
 
 
 const getPostInfoByNav = async( post ) => {
-    return await appDataSource.query(
+    const result = await database.query(
         `SELECT
             description
         FROM posts_infomations
         WHERE description LIKE "%${post}%"`,
     )
+
+    return result.fetchAll();
 }
 
 const getProducts = async( product ) => {
-    return await appDataSource.query(
+    const result = await database.query(
         `SELECT
             *
         FROM products
         WHERE description LIKE "%${product}%"`,
     )
+
+    return result.fetchAll();
 }
 
 const getPostLists = async( post, userId ) => {
-    return await appDataSource.query(
+    const result = await database.query(
         `SELECT
             users.nickname,
             users.profile_image,
@@ -45,6 +49,8 @@ const getPostLists = async( post, userId ) => {
         GROUP BY posts.id, likes.user_id`,
         [ userId, userId ]
     )
+
+    return result.fetchAll()
 }
 
 

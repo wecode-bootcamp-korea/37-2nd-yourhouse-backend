@@ -2,7 +2,7 @@ const { SocialAuth } = require("../util/socialAuth")
 const request = require("supertest");
 
 const { createApp } = require("../app");
-const appDataSource = require("../models/dataSource");
+const { appDataSource } = require("../models/dataSource");
 
 jest.mock("../util/socialAuth");
 

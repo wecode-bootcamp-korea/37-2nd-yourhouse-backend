@@ -1,8 +1,8 @@
-const appDataSource = require("./dataSource");
+const { database } = require("./dataSource");
 
 
 const getProfile = async( userId ) => {
-    const [ profile ] = await appDataSource.query(
+    const result = await database.query(
         `SELECT
         users.nickname,
             users.profile_image,
@@ -22,11 +22,12 @@ const getProfile = async( userId ) => {
         WHERE users.id = ?`,
         [ userId ]
     )
-    return profile
+
+    return result.fetchOne();
 }
 
 const getMyPosts = async( userId ) => {
-    return await appDataSource.query(
+    const result = await database.query(
         `SELECT
             users.nickname,
             users.profile_image,
@@ -51,10 +52,12 @@ const getMyPosts = async( userId ) => {
         GROUP BY posts.id, likes.user_id`,
         [ userId, userId, userId ]
     )
+
+    return result.fetchAll();
 }
 
 const getLikePosts = async( userId ) => {
-    return await appDataSource.query(
+    const result = await database.query(
         `SELECT
             users.nickname,
             users.profile_image,
@@ -79,6 +82,8 @@ const getLikePosts = async( userId ) => {
         GROUP BY posts.id, likes.user_id`,
         [ userId, userId, userId ]
     )
+    
+    return result.fetchAll()
 }
 
 

@@ -1,8 +1,8 @@
-const appDataSource = require('./dataSource')
+const { database } = require("./dataSource");
 
 
 const createUser = async ( user ) => {
-    return await appDataSource.query(
+    const result = await database.query(
         `INSERT INTO users(
             social_id,
             email,
@@ -11,32 +11,36 @@ const createUser = async ( user ) => {
         ) VALUES ( ?, ?, ?, ? )`,
         [ user.id, user.kakao_account.email, user.kakao_account.profile.nickname, user.kakao_account.profile.profile_image_url ]
     )
+
+    return result.getLastInsertId();
 }
 
-const getUserToSocial = async ( socialId ) => {
-    const [ user ] = await appDataSource.query(
+const getUserToEmail = async ( email ) => {
+    const result = await database.query(
         `SELECT
             *
         FROM users
-        WHERE social_id = ?`,
-        [ socialId ]
+        WHERE email = ?`,
+        [ email ]
     )
-    return user
+
+    return result.fetchOne();
 }
 
 const getUserById = async ( id ) => {
-    const [ user ] = await appDataSource.query(
+    const result = await database.query(
         `SELECT
             *
         FROM users
         WHERE id = ?`,
         [ id ]
     )
-    return user;
+    
+    return result.fetchOne();
 }
 
 module.exports = {
     createUser,
-    getUserToSocial,
+    getUserToEmail,
     getUserById
 }

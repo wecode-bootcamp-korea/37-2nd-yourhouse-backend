@@ -1,8 +1,8 @@
-const appDataSource = require("./dataSource");
+const {database} = require("./dataSource");
 
 const addLike = async(userId, postId) => { 
     
-    const addLike = await appDataSource.query(
+    const result = await database.query(
         `
             INSERT INTO likes(
                 post_id,
@@ -10,24 +10,24 @@ const addLike = async(userId, postId) => {
             )VALUES(?,?)
         `,[ postId, userId]
     )
-    return addLike
+    return result.getLastInsertId()
 }
 
 const deleteLike = async(userId, postId) => {
-    const deleteLikeLaws =( await appDataSource.query(
+    const result =( await database.query(
         `
             DELETE FROM likes
             WHERE user_id = ?
             AND post_id = ?
         `,[userId, postId]
-    )).affectedRows
+    ))
 
-    if (deleteLikeLaws !== 0 && deleteLikeLaws !== 1) throw new Error('UNEXPECTED_NUMBER_OF_RECORDS_DELETED')
+    if (result.getAffectdRows() !== 0 && result.getAffectdRows() !== 1) throw new Error('UNEXPECTED_NUMBER_OF_RECORDS_DELETED')
 
-    return deleteLikeLaws
+    return result.getAffectdRows()
 }
 
 module.exports = {
     addLike,
-    deleteLike,
+    deleteLike
 }

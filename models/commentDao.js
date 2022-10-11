@@ -1,7 +1,7 @@
-const appDataSource = require('./dataSource')
+const { database } = require('./dataSource')
 
 const postComment = async (userId, postId, comment) => {
-    await appDataSource.query (
+    const result = await database.query (
         `INSERT INTO comments(
             user_id,
             post_id,
@@ -9,11 +9,12 @@ const postComment = async (userId, postId, comment) => {
         )VALUES(?, ? ,?)`,
         [userId, postId, comment]
     )
+
+    return result.getLastInsertId()
 }
 
 const getComment = async (postId, userId, limit, offset) => {
-
-    const result = await appDataSource.query (
+    const result = await database.query (
         `SELECT
             c.id,
             c.comment,
@@ -31,18 +32,19 @@ const getComment = async (postId, userId, limit, offset) => {
         ORDER BY id desc LIMIT ? OFFSET ? `,
        [ userId, postId, limit, offset]
     ) 
-    return result
+
+    return result.fetchAll()
 }
 
 const deleteComment = async( userId, commentId ) => {
-    const result = await appDataSource.query(
+    const result = await database.query(
         `DELETE FROM comments c
         WHERE c.user_id = ?
         AND c.id = ? `,
         [ userId, commentId ]
     )
 
-    return result
+    return result.getAffectdRows();
 }
 
 module.exports = {

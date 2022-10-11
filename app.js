@@ -27,7 +27,7 @@ const createApp = () => {
 
     app.use(globalErrorHandler);
 
-    return app
+    return app;
 }
 
 module.exports = { createApp }

@@ -10,7 +10,7 @@ const posts = asyncWrap( async(req, res) => {
         throw new BaseError(400, "KEY_ERROR");
       }
     const posts = await postService.posts( userId, parseInt(sort), color, roomsize, residence, style, space, parseInt(limit), parseInt(offset));
-
+    
     res.status(200).send({list : posts})
 })
 
@@ -52,9 +52,18 @@ const deleteFollow = asyncWrap( async(req, res) =>{
     res.status(204).json({message : "SUCCESS_DELETE"})
 })
 
+const getPostDetail = asyncWrap( async(req, res) => {
+    const { postId } = req.params
+
+    const post = await postService.getPostDetail( postId );
+    
+    return res.status(200).json({ post });
+})
+
 module.exports = {
     posts,
     follows,
     addFollow,
     deleteFollow,
+    getPostDetail
 }

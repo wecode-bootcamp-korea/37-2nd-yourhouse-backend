@@ -7,6 +7,7 @@ const postController = require("./postController")
 const likeController = require("./likeController")
 const postingController = require("./postingController")
 
+
 module.exports = {
     pingController,
     userController,
