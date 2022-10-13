@@ -29,12 +29,12 @@ const posts = async(userId, sort, color, roomsize, residence, style, space, limi
         },
         {
           field: 'residence',
-          value: ` PI.resicence_id in (`+ String(residence) + `)`,
+          value: ` PI.residence_id in (`+ String(residence) + `)`,
           condition: ` AND `,
         },
         {
             field: 'style',
-            value: ` PI.style_id in (`+ String(residence) + `)`,
+            value: ` PI.style_id in (`+ String(style) + `)`,
             condition: ` AND `,
         },
         {
@@ -47,17 +47,22 @@ const posts = async(userId, sort, color, roomsize, residence, style, space, limi
     const newCriteria = criterias.filter((cr) => queries.hasOwnProperty(cr.field) && queries[cr.field] !== undefined)
     
     const whereClause = filterBuilder(newCriteria)
-        
+    console.log(whereClause);    
+    
     const sortSet = {
-        current : 'current',
-        likes : 'likes'
+        current : 1,
+        likes : 2
     }
-      
-
-    if(sort == sortSet.current){sort =`P.id DESC`}
-    else if(sort == sortSet.likes){sort = `likesNum DESC, p,id DESC`}
-
-  
+      console.log("ADSAD",sort)
+    if(sort == sortSet.current){
+        sort =`P.id DESC`
+    }else if(sort == sortSet.likes){
+        sort = `likesNum DESC, P.id DESC`
+    }
+    console.log(sort);
+    console.log(sortSet)
+    console.log(sortSet.likes)
+    console.log(sortSet.current)
     const posts = await appDataSource.query(       
         ` 
             SELECT 
@@ -101,6 +106,7 @@ const posts = async(userId, sort, color, roomsize, residence, style, space, limi
             console.log(posts)
         return posts
     }catch(err) {
+        console.log("aaa,",err)
         throw new BaseError(500, `INVALID_DATA_INPUT`);
     }    
 }
@@ -140,6 +146,7 @@ const follows = async(userId, limit, offset) => {
             LEFT JOIN likes L2
             ON L2.post_id = P.id 
             AND L2.user_id = ? 
+            ${whereClause}
             GROUP BY P.id
             ORDER BY P.create_at DESC 
             limit ?
