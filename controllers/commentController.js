@@ -11,7 +11,7 @@ const postComment = asyncWrap( async(req, res) => {
         error.statusCode = 400;
         throw error;
     }
-    await commentService.postComment(userId, postId, comment);
+    await commentService.postComment( userId, postId, comment);
 
     const comments = await commentService.getComment(postId, userId, 5, 0 );
 
@@ -19,8 +19,8 @@ const postComment = asyncWrap( async(req, res) => {
 })
 
 const getComment = asyncWrap ( async(req,res) => {
-
-    const { postId, userId, limit, offset} = req.query
+    const userId = req.user.id
+    const { postId, limit, offset} = req.query
 
     if (!postId || !limit || !offset){
         const error = new Error("KEY ERROR");
@@ -39,8 +39,8 @@ const deleteComment = asyncWrap( async(req, res) => {
         error.statusCode = 400;
         throw error;
     }
-    await commentService.deleteComment( userId, commentId )
-    return res.status(200).json({message: "Delete Success"})
+    const dcomments = await commentService.deleteComment( userId, commentId )
+    return res.status(200).json({message: "Delete Success",dcomments:dcomments });
 })
 
 module.exports = {

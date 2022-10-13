@@ -20,13 +20,16 @@ const getComment = async (postId, userId, limit, offset) => {
             c.post_id,
             c.user_id,
             u.profile_image,
-            u.nickname
+            u.nickname,
+        CASE WHEN c.user_id = ?
+            THEN 1
+            ELSE 0
+            END AS commentEx
         FROM comments c
         INNER JOIN users u ON c.user_id = u.id
         WHERE c.post_id = ?
-        AND u.id = ?
         ORDER BY id desc LIMIT ? OFFSET ? `,
-       [postId, userId, limit, offset]
+       [ userId, postId, limit, offset]
     ) 
     return result
 }
@@ -38,6 +41,7 @@ const deleteComment = async( userId, commentId ) => {
         AND c.id = ? `,
         [ userId, commentId ]
     )
+
     return result
 }
 
