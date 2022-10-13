@@ -54,7 +54,7 @@ const posts = async(userId, sort, color, roomsize, residence, style, space, limi
         likes : 2
     }
       console.log("ADSAD",sort)
-    if(sort == sortSet.current){
+    if(sort == sortSet.current || !sort){
         sort =`P.id DESC`
     }else if(sort == sortSet.likes){
         sort = `likesNum DESC, P.id DESC`
@@ -67,6 +67,7 @@ const posts = async(userId, sort, color, roomsize, residence, style, space, limi
         ` 
             SELECT 
                 P.id,
+                U1.id writerId,
                 U1.description,
                 U1.profile_image,
                 U1.nickname,
@@ -74,7 +75,8 @@ const posts = async(userId, sort, color, roomsize, residence, style, space, limi
                 CAST(CONCAT("[", GROUP_CONCAT(DISTINCT JSON_OBJECT('commentId', C.id, 'comment', C.comment, 'postId', C.post_id, 'nickname', U2.nickname, 'profile', U2.profile_image)), "]")  as JSON) as commentInfo,
                 COUNT (DISTINCT U2.id) AS commentsNum,
                 COUNT (DISTINCT U3.id) AS likesNum,
-                CASE WHEN L2.user_id = ? THEN 1 ELSE 0 END as likeEx, 
+                CASE WHEN L2.user_id = ? THEN 1 ELSE 0 END as likeEx,
+                CASE WHEN F.follow_id = ? THEN 1 ELSE 0 END as followEx,  
                 P.create_at
             FROM posts as P
             INNER JOIN posts_infomations as PI
@@ -95,13 +97,16 @@ const posts = async(userId, sort, color, roomsize, residence, style, space, limi
             ON U3.id = L.user_id
             LEFT JOIN likes L2
             ON L2.post_id = P.id 
-            AND L2.user_id = ? 
+            AND L2.user_id = ?
+            LEFT JOIN follows as F
+            ON F.follower_id = P.user_id
+            AND F.follow_id = ?
             ${ whereClause }
             GROUP BY P.id
             ORDER BY ${sort} 
             limit ?
             offset ?
-            `, [userId, userId, limit, offset]
+            `, [userId, userId, userId, userId, limit, offset]
         )
         return posts
     }catch(err) {
@@ -116,12 +121,14 @@ const follows = async(userId, limit, offset) => {
         `
         SELECT
             P.id,
+            U1.id as writerId,
             U1.profile_image,
             U1.nickname,
             CAST(CONCAT("[", GROUP_CONCAT(DISTINCT JSON_OBJECT('inPostId', PI.id, 'image', PI.image, 'desc', PI.description)), "]") as JSON) as postinfo,
             COUNT (DISTINCT U2.id) AS commentsNum,
             COUNT (DISTINCT U3.id) AS likesNum,
-            CASE WHEN L2.user_id = ? THEN 1 ELSE 0 END as likeEx, 
+            CASE WHEN L2.user_id = ? THEN 1 ELSE 0 END as likeEx,
+            CASE WHEN F.follow_id = ? THEN 1 ELSE 0 END as followEx,  
             P.create_at
             FROM posts as P
             INNER JOIN posts_infomations as PI
@@ -132,8 +139,6 @@ const follows = async(userId, limit, offset) => {
             ON PD.id = PPI.product_id
             INNER JOIN users as U1
             ON P.user_id = U1.id
-            INNER JOIN follows as F
-            ON F.follow_id = U1.id
             INNER JOIN comments C
             ON P.id = C.post_id
             INNER JOIN users as U2
@@ -144,13 +149,15 @@ const follows = async(userId, limit, offset) => {
             ON U3.id = L.user_id
             LEFT JOIN likes L2
             ON L2.post_id = P.id 
-            AND L2.user_id = ? 
-            ${whereClause}
+            AND L2.user_id = ?
+            INNER JOIN follows as F
+            ON F.follower_id = P.user_id
+            AND F.follow_id = ? 
             GROUP BY P.id
-            ORDER BY P.create_at DESC 
+            ORDER BY P.id DESC 
             limit ?
             offset ?
-    `, [userId, userId, limit, offset]
+    `, [userId, userId, userId, userId, limit, offset]
     )
     return follows
     }
@@ -160,7 +167,7 @@ const follows = async(userId, limit, offset) => {
     }
 }
 
-const addFollow = async(followerId, writerId) => {
+const addFollow = async(userId, writerId) => {
     try{
         const result = await appDataSource.query(
             `
@@ -168,7 +175,7 @@ const addFollow = async(followerId, writerId) => {
                     follow_id,
                     follower_id
                 )VALUES (?, ?)
-            `, [writerId, followerId]
+            `, [userId, writerId]
         )
         return result
     }catch{
@@ -177,13 +184,14 @@ const addFollow = async(followerId, writerId) => {
     }
 }
 
-const deleteFollow = async(userId) => {
+const deleteFollow = async(userId, writerId) => {
     try{
     const deleteFollow = await appDataSource.query(
         `
             DELETE FROM follows
-            WHERE follower_id =?
-        `, [userId]
+            WHERE follow_id =?
+            AND follower_id =?
+        `, [userId, writerId]
     )
     return deleteFollow
     }catch{
@@ -198,8 +206,3 @@ module.exports = {
     addFollow,
     deleteFollow,
 }
-
-///case and then 이나 분리 하기 유저아이디.
-// 작성자 프로필 (이미지, 유저 닉네입)
-// 글 사진 1개 description, 좋아요 개수, 댓글 개수만
-// 정렬은? 글 작성순

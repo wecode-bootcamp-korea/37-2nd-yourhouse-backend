@@ -8,12 +8,12 @@ const follows = async (userId, limit, offset) => {
   return await postDao.follows(userId, limit, offset)
 }
 
-const addFollow = async (followerId, writerId) => {
-  return await postDao.addFollow(followerId, writerId)
+const addFollow = async (userId, writerId) => {
+  return await postDao.addFollow(userId, writerId)
 }
 
-const deleteFollow = async (userId) => {
-  return await postDao.deleteFollow(userId)
+const deleteFollow = async (userId, writerId) => {
+  return await postDao.deleteFollow(userId, writerId)
 }
 
 module.exports ={

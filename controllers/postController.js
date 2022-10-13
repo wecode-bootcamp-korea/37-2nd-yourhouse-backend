@@ -27,22 +27,27 @@ const follows = asyncWrap( async(req, res) => {
 }) 
 
 const addFollow = asyncWrap( async(req, res) => {
-    const followerId = req.user.id
-    const { writerId } = req.body
+    const userId = req.user.id
+    const { writerId } = req.query
     
     if (!writerId){
         throw new BaseError(400, "KEY_ERROR");
     }
 
-    const followPost = await postService.addFollow(followerId, writerId, postId)
+    const followPost = await postService.addFollow(userId, writerId)
 
     res.status(201).json({ followPost, message : "SUCCESS_FOLLOWING"})
 })
 
 const deleteFollow = asyncWrap( async(req, res) =>{
     const userId = req.user.id
+    const { writerId } = req.query
+
+    if (!writerId){
+        throw new BaseError(400, "KEY_ERROR");
+    }
     
-    await postService.deleteFollow(userId)
+    await postService.deleteFollow(userId, writerId)
 
     res.status(204).json({message : "SUCCESS_DELETE"})
 })
