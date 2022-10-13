@@ -4,6 +4,7 @@ const { asyncWrap } = require("../middleware/errorHandler")
 
 const postComment = asyncWrap( async(req, res) => {
     const userId = req.user.id
+    
     const { postId, comment } = req.body
 
     if (!postId || !comment) {
@@ -32,9 +33,10 @@ const getComment = asyncWrap ( async(req,res) => {
 
 const deleteComment = asyncWrap( async(req, res) => {
     const userId = req.user.id
-    const {commentId } = req.query
+    const { commentId } = req.query
+    console.log(req.query)
     
-    if (!userId || !commentId) {
+    if ( !commentId) {
         const error = new Error("KEY ERROR");
         error.statusCode = 400;
         throw error;

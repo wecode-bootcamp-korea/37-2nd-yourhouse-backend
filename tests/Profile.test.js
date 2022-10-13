@@ -1,7 +1,7 @@
 const request = require("supertest");
 
 const { createApp } = require("../app");
-const appDataSource = require("../models/dataSource");
+const { appDataSource } = require("../models/dataSource");
 
 describe("Social Auth", () => {
     let app;

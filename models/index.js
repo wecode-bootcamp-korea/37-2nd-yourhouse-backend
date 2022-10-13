@@ -7,6 +7,7 @@ const likeDao = require("./likeDao")
 const appDataSource = require('./dataSource');
 const postingDao = require('./postingDao');
 
+
 module.exports = {
     userDao,
     profileDao,

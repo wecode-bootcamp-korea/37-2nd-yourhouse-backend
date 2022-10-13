@@ -15,6 +15,7 @@ class SocialAuth{
             headers:{"content-type":"application/x-www-form-urlencoded;charset=urf-8"},
             data: `grant_type=authorization_code&client_id=${this.clientId}&redirect_uri=${this.redirectUri}&code=${this.code}`
         })
+        
         return data.access_token
     }
 
@@ -23,6 +24,7 @@ class SocialAuth{
             url:"https://kapi.kakao.com/v2/user/me",
             headers:{ Authorization: `Bearer ${token}` }
         })
+
         return data
     }
 }
