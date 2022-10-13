@@ -15,6 +15,7 @@ const loginRequired = async (req, res, next) => {
         req.user = user;
         return next();
     } catch (err) {
+        console.log(err)
         next( new BaseError("INVALID_TOKEN", 400) );
     }
 }

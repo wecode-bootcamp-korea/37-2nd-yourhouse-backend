@@ -2,18 +2,15 @@ const appDataSource = require("./dataSource");
 
 const addLike = async(userId, postId) => { 
     
-    const addLikeLaws = (await appDataSource.query(
+    const addLike = await appDataSource.query(
         `
             INSERT INTO likes(
                 post_id,
-                user_id,
+                user_id
             )VALUES(?,?)
-        `,[userId, postId]
-    )).affectedRows 
-
-    if (addLikeLaws !==0 && addLikeLaws !==1) throw new Error('UNEXPECTED_NUMBER_OF_RECORDS_ADDED')
-
-    return addlikeLaws
+        `,[ postId, userId]
+    )
+    return addLike
 }
 
 const deleteLike = async(userId, postId) => {
