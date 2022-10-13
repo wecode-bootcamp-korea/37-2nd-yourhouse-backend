@@ -4,6 +4,7 @@ const profileController = require("./profileController");
 const commentController = require("./commentController");
 const searchController = require("./searchController");
 const postController = require("./postController")
+const likeController = require("./likeController")
 
 module.exports = {
     pingController,
@@ -11,6 +12,6 @@ module.exports = {
     postController,
     profileController,
     searchController,
-    profileController,
+    likeController,
     commentController
 }
