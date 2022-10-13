@@ -5,6 +5,7 @@ const searchService = require("./searchService")
 const likeService = require("./likeService")
 const postService = require("./postService");
 const commentService = require("./commentService");
+const postingService = require("./postingService")
 
 module.exports = {
     pingService,
@@ -13,5 +14,6 @@ module.exports = {
     profileService,
     searchService,
     postService,
-    commentService
+    commentService,
+    postingService
 }
