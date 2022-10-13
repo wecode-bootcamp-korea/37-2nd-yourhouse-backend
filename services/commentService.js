@@ -5,7 +5,6 @@ const postComment = async (userId, productId, comment) => {
 }
 
 const getComment = async ( postId, userId, limit, offset) => {
-    console.log(postId, userId, limit, offset)
     return await commentDao.getComment(postId, userId, limit, offset)
 }
 
