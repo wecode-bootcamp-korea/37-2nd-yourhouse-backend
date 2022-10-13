@@ -3,8 +3,8 @@ const { userDao } = require("../models");
 const { BaseError } = require("../util/error");
 const { SocialAuth } = require("../util/socialAuth");
 
-
 const authUser = async ( code ) => {
+    
     const auth = new SocialAuth(code, process.env.clientId, process.env.redirectUri);
 
     const accessToken = await auth.getKakaoToken();
@@ -18,8 +18,8 @@ const authUser = async ( code ) => {
         await userDao.createUser(userInfo)
         user = await userDao.getUserToSocial(userInfo.id);
     } 
+    return [jwt.sign({ user_id: user.id }, process.env.TOKKENSECRET), user.nickname]
     
-    return jwt.sign({ user_id: user.id }, process.env.TOKKENSECRET);
 }
 
 

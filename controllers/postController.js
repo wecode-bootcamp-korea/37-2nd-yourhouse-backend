@@ -4,11 +4,12 @@ const { BaseError } = require("../util/error");
 
 const posts = asyncWrap( async(req, res) => {
     const  userId  = req.user.id
+    console.log(req.query)
     const { sort, color, roomsize, residence, style, space,limit, offset} = req.query
     if (!limit || !offset) {
         throw new BaseError(400, "KEY_ERROR");
       }
-    const posts = await postService.posts( userId, sort, color, roomsize, residence, style, space, parseInt(limit), parseInt(offset));
+    const posts = await postService.posts( userId, parseInt(sort), color, roomsize, residence, style, space, parseInt(limit), parseInt(offset));
 
     res.status(200).send({list : posts})
 })
