@@ -4,6 +4,8 @@ const searchDao = require("./searchDao");
 const postDao = require("./postDao")
 const commentDao = require('./commentDao');
 const likeDao = require("./likeDao")
+const appDataSource = require('./dataSource');
+const postingDao = require('./postingDao');
 
 module.exports = {
     userDao,
@@ -11,5 +13,8 @@ module.exports = {
     searchDao,
     postDao,
     likeDao,
-    commentDao
+    commentDao,
+    commentDao,
+    appDataSource,
+    postingDao
 }

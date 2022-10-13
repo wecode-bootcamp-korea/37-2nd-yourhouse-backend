@@ -108,6 +108,7 @@ const posts = async(userId, sort, color, roomsize, residence, style, space, limi
             offset ?
             `, [userId, userId, userId, userId, limit, offset]
         )
+            console.log(posts)
         return posts
     }catch(err) {
         console.log("aaa,",err)
