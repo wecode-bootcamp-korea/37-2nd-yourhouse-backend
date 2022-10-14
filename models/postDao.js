@@ -128,7 +128,7 @@ const follows = async(userId, limit, offset) => {
     const result = await database.query(
         `
         SELECT
-            P.id,
+            P.id AS postId,
             U1.id as writerId,
             U1.profile_image,
             U1.nickname,
@@ -147,13 +147,13 @@ const follows = async(userId, limit, offset) => {
             ON PD.id = PPI.product_id
             INNER JOIN users as U1
             ON P.user_id = U1.id
-            INNER JOIN comments C
+            LEFT JOIN comments C
             ON P.id = C.post_id
-            INNER JOIN users as U2
+            LEFT JOIN users as U2
             ON U2.id = C.user_id
-            INNER JOIN likes as L
+            LEFT JOIN likes as L
             ON P.id = L.post_id
-            INNER JOIN users as U3
+            LEFT JOIN users as U3
             ON U3.id = L.user_id
             LEFT JOIN likes L2
             ON L2.post_id = P.id 
