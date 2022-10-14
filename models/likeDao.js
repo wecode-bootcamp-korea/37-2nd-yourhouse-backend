@@ -22,7 +22,7 @@ const deleteLike = async(userId, postId) => {
         `,[userId, postId]
     ))
 
-    if (result.getAffectdRows() !== 0 && result.getAffectdRows() !== 1) throw new Error('UNEXPECTED_NUMBER_OF_RECORDS_DELETED')
+    // if (result.getAffectdRows() !== 0 && result.getAffectdRows() !== 1) throw new Error('UNEXPECTED_NUMBER_OF_RECORDS_DELETED')
 
     return result.getAffectdRows()
 }
