@@ -1,20 +1,20 @@
 const { database } = require('./dataSource')
 
-const postComment = async (userId, postId, comment) => {
-    const result = await database.query (
+const postComment = async ( userId, postId, comment ) => {
+    const result = await database.query(
         `INSERT INTO comments(
             user_id,
             post_id,
             comment
         )VALUES(?, ? ,?)`,
-        [userId, postId, comment]
+        [ userId, postId, comment ]
     )
 
-    return result.getLastInsertId()
+    return result.getLastInsertId();
 }
 
-const getComment = async (postId, userId, limit, offset) => {
-    const result = await database.query (
+const getComment = async ( postId, userId, limit, offset ) => {
+    const result = await database.query(
         `SELECT
             c.id,
             c.comment,
@@ -30,10 +30,10 @@ const getComment = async (postId, userId, limit, offset) => {
         INNER JOIN users u ON c.user_id = u.id
         WHERE c.post_id = ?
         ORDER BY id desc LIMIT ? OFFSET ? `,
-       [ userId, postId, limit, offset]
+       [ userId, postId, limit, offset ]
     ) 
 
-    return result.fetchAll()
+    return result.fetchAll();
 }
 
 const deleteComment = async( userId, commentId ) => {

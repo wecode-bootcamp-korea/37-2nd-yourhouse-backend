@@ -15,11 +15,35 @@ const authUser = async ( code ) => {
     if ( !user ) {
         await userDao.createUser( userInfo );
         user = await userDao.getUserToEmail( userInfo.kakao_account.email );
-    } 
+    }
+     
     return [ jwt.sign({ user_id: user.id }, process.env.TOKKENSECRET), user.nickname, user.profile_image ];
 }
 
+const addFollow = async ( userId, writerId ) => {
+
+    return await userDao.addFollow( userId, writerId );
+}
+
+const deleteFollow = async ( userId, writerId ) => {
+    
+    return await userDao.deleteFollow( userId, writerId );
+}
+
+const addLike = async ( userId, postId ) => {
+
+    return await userDao.addLike( userId, postId );
+}
+
+const deleteLike = async ( userId, postId ) => {
+
+    return await userDao.deleteLike( userId, postId );
+}
 
 module.exports = {
-    authUser
+    authUser,
+    addFollow,
+    deleteFollow,
+    addLike,
+    deleteLike
 }
