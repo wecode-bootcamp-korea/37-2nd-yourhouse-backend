@@ -83,7 +83,7 @@ const getLikePosts = async( userId ) => {
         [ userId, userId, userId ]
     )
     
-    return result.fetchAll()
+    return result.fetchAll();
 }
 
 

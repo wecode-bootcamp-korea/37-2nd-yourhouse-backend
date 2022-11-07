@@ -3,7 +3,7 @@ const { asyncWrap } = require("../middleware/errorHandler")
 
 
 const getProfile = asyncWrap( async(req, res) => {
-    const userId = req.user.id
+    const userId = req.user.id;
     
     const profile = await profileService.getProfile( userId );
 
@@ -11,15 +11,15 @@ const getProfile = asyncWrap( async(req, res) => {
 })
 
 const getMyPosts = asyncWrap( async(req, res) => {
-    const userId = req.user.id
+    const userId = req.user.id;
     
     const posts = await profileService.getMyPosts( userId );
 
-    return res.status(200).json({ posts })
+    return res.status(200).json({ posts });
 })
 
 const getLikePosts = asyncWrap( async(req, res) => {
-    const userId = req.user.id
+    const userId = req.user.id;
 
     const posts = await profileService.getLikePosts( userId );
 

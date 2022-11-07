@@ -1,10 +1,10 @@
 const router = require("express").Router();
 
 const { commentController } = require("../controllers");
-const { loginRequired, getuserId } = require("../middleware/auth");
+const { loginRequired, getUserId } = require("../middleware/auth");
 
 
-router.get("", getuserId, commentController.getComment);
+router.get("", getUserId, commentController.getComments);
 router.post("", loginRequired, commentController.postComment);
 router.delete("", loginRequired, commentController.deleteComment);
 

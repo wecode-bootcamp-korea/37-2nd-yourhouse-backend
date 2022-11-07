@@ -50,7 +50,7 @@ const getPostLists = async( post, userId ) => {
         [ userId, userId ]
     )
 
-    return result.fetchAll()
+    return result.fetchAll();
 }
 
 

@@ -1,9 +1,8 @@
-const { BaseError } = require("../util/error")
+const { BaseError } = require("../util/error");
 const { database } = require("./datasource")
 
-const posts = async(userId, sort, color, roomsize, residence, style, space, limit, offset )=> {
+const getPostsList = async(userId, sort, color, roomsize, residence, style, space, limit, offset )=> {
     const queries ={ userId, sort, color, roomsize, residence, style, space, limit, offset}
-    try{
     function filterBuilder(criteria) {
         let sql = ``;
         let fieldArr = [];
@@ -47,87 +46,73 @@ const posts = async(userId, sort, color, roomsize, residence, style, space, limi
     const newCriteria = criterias.filter((cr) => queries.hasOwnProperty(cr.field) && queries[cr.field] !== undefined)
     
     const whereClause = filterBuilder(newCriteria)
-    console.log(whereClause);    
     
     const sortSet = {
         current : 1,
         likes : 2
     }
-      console.log("ADSAD",sort)
     if(sort == sortSet.current || !sort){
         sort =`P.id DESC`
     }else if(sort == sortSet.likes){
         sort = `likesNum DESC, P.id DESC`
     }
-    console.log(sort);
-    console.log(sortSet)
-    console.log(sortSet.likes)
-    console.log(sortSet.current)
     const result = await database.query(       
-        ` 
-            SELECT 
-                P.id,
-                U1.id writerId,
-                U1.description,
-                U1.profile_image,
-                U1.nickname,
-                CAST(CONCAT("[", GROUP_CONCAT(DISTINCT JSON_OBJECT('inPostId', PI.id, 'image', PI.image, 'desc', PI.description)), "]") as JSON) as postinfo,
-                CAST(CONCAT("[", GROUP_CONCAT(DISTINCT JSON_OBJECT('commentId', C.id, 'comment', C.comment, 'postId', C.post_id, 'nickname', U2.nickname, 'profile', U2.profile_image)), "]")  as JSON) as commentInfo,
-                (SELECT
-                    COUNT(*)
-                FROM comments 
-                WHERE P.id = comments.post_id) AS commentsNum,
-                (SELECT
-                    COUNT(*)
-                FROM likes
-                WHERE likes.post_id = P.id) AS likesNum,
-                CASE WHEN L2.user_id = ? THEN 1 ELSE 0 END as likeEx,
-                CASE WHEN F.follow_id = ? THEN 1 ELSE 0 END as followEx,  
-                P.create_at
-            FROM posts as P
-            INNER JOIN posts_infomations as PI
-            ON PI.post_id = P.id
-            INNER JOIN posts_products_infomations PPI
-            ON PPI.post_info_id = PI.id
-            INNER JOIN products PD
-            ON PD.id = PPI.product_id
-            INNER JOIN users as U1
-            ON P.user_id = U1.id
-            LEFT JOIN comments C
-            ON P.id = C.post_id
-            LEFT JOIN users as U2
-            ON U2.id = C.user_id
-            LEFT JOIN likes as L
-            ON P.id = L.post_id
-            LEFT JOIN users as U3
-            ON U3.id = L.user_id
-            LEFT JOIN likes L2
-            ON L2.post_id = P.id 
-            AND L2.user_id = ?
-            LEFT JOIN follows as F
-            ON F.follower_id = P.user_id
-            AND F.follow_id = ?
-            ${ whereClause }
-            GROUP BY P.id
-            ORDER BY ${sort} 
-            limit ?
-            offset ?
-            `, [userId, userId, userId, userId, limit, offset]
+        `SELECT 
+            P.id,
+            U1.id writerId,
+            U1.description,
+            U1.profile_image,
+            U1.nickname,
+            CAST(CONCAT("[", GROUP_CONCAT(DISTINCT JSON_OBJECT('inPostId', PI.id, 'image', PI.image, 'desc', PI.description)), "]") as JSON) as postinfo,
+            CAST(CONCAT("[", GROUP_CONCAT(DISTINCT JSON_OBJECT('commentId', C.id, 'comment', C.comment, 'postId', C.post_id, 'nickname', U2.nickname, 'profile', U2.profile_image)), "]")  as JSON) as commentInfo,
+            (SELECT
+                COUNT(*)
+            FROM comments 
+            WHERE P.id = comments.post_id) AS commentsNum,
+            (SELECT
+                COUNT(*)
+            FROM likes
+            WHERE likes.post_id = P.id) AS likesNum,
+            CASE WHEN L2.user_id = ? THEN 1 ELSE 0 END as likeEx,
+            CASE WHEN F.follow_id = ? THEN 1 ELSE 0 END as followEx,  
+            P.create_at
+        FROM posts as P
+        INNER JOIN posts_infomations as PI
+        ON PI.post_id = P.id
+        INNER JOIN posts_products_infomations PPI
+        ON PPI.post_info_id = PI.id
+        INNER JOIN products PD
+        ON PD.id = PPI.product_id
+        INNER JOIN users as U1
+        ON P.user_id = U1.id
+        LEFT JOIN comments C
+        ON P.id = C.post_id
+        LEFT JOIN users as U2
+        ON U2.id = C.user_id
+        LEFT JOIN likes as L
+        ON P.id = L.post_id
+        LEFT JOIN users as U3
+        ON U3.id = L.user_id
+        LEFT JOIN likes L2
+        ON L2.post_id = P.id 
+        AND L2.user_id = ?
+        LEFT JOIN follows as F
+        ON F.follower_id = P.user_id
+        AND F.follow_id = ?
+        ${ whereClause }
+        GROUP BY P.id
+        ORDER BY ${sort} 
+        limit ?
+        offset ?`,
+        [userId, userId, userId, userId, limit, offset]
         )
-            console.log(posts)
+
         return result.fetchAll()
-    }catch(err) {
-        
-        console.log("aaa,",err)
-        throw new BaseError(500, `INVALID_DATA_INPUT`);
-    }    
 }
 
-const follows = async(userId, limit, offset) => {
-    try{
+const getFollowsList = async(userId, limit, offset) => {
     const result = await database.query(
-        `
-        SELECT
+        `SELECT
             P.id AS postId,
             U1.id as writerId,
             U1.profile_image,
@@ -138,76 +123,38 @@ const follows = async(userId, limit, offset) => {
             CASE WHEN L2.user_id = ? THEN 1 ELSE 0 END as likeEx,
             CASE WHEN F.follow_id = ? THEN 1 ELSE 0 END as followEx,  
             P.create_at
-            FROM posts as P
-            INNER JOIN posts_infomations as PI
-            ON PI.post_id = P.id
-            INNER JOIN posts_products_infomations PPI
-            ON PPI.post_info_id = PI.id
-            INNER JOIN products PD
-            ON PD.id = PPI.product_id
-            INNER JOIN users as U1
-            ON P.user_id = U1.id
-            LEFT JOIN comments C
-            ON P.id = C.post_id
-            LEFT JOIN users as U2
-            ON U2.id = C.user_id
-            LEFT JOIN likes as L
-            ON P.id = L.post_id
-            LEFT JOIN users as U3
-            ON U3.id = L.user_id
-            LEFT JOIN likes L2
-            ON L2.post_id = P.id 
-            AND L2.user_id = ?
-            INNER JOIN follows as F
-            ON F.follower_id = P.user_id
-            AND F.follow_id = ? 
-            GROUP BY P.id
-            ORDER BY P.id DESC 
-            limit ?
-            offset ?
-    `, [userId, userId, userId, userId, limit, offset]
+        FROM posts as P
+        INNER JOIN posts_infomations as PI
+        ON PI.post_id = P.id
+        INNER JOIN posts_products_infomations PPI
+        ON PPI.post_info_id = PI.id
+        INNER JOIN products PD
+        ON PD.id = PPI.product_id
+        INNER JOIN users as U1
+        ON P.user_id = U1.id
+        LEFT JOIN comments C
+        ON P.id = C.post_id
+        LEFT JOIN users as U2
+        ON U2.id = C.user_id
+        LEFT JOIN likes as L
+        ON P.id = L.post_id
+        LEFT JOIN users as U3
+        ON U3.id = L.user_id
+        LEFT JOIN likes L2
+        ON L2.post_id = P.id 
+        AND L2.user_id = ?
+        INNER JOIN follows as F
+        ON F.follower_id = P.user_id
+        AND F.follow_id = ? 
+        GROUP BY P.id
+        ORDER BY P.id DESC 
+        limit ?
+        offset ?`,
+        [userId, userId, userId, userId, limit, offset]
     )
+
     return result.fetchAll()
-    }
-    catch(err) {
-        console.log(err)
-        throw new BaseError(500,`INVALID_DATA_INPUT`);
-    }
 }
-
-const addFollow = async(userId, writerId) => {
-    try{
-        const result = await database.query(
-            `
-                INSERT INTO follows(
-                    follow_id,
-                    follower_id
-                )VALUES (?, ?)
-            `, [userId, writerId]
-        )
-        return result.getLastInsertId()
-    }catch{
-        console.log(err)
-        throw new BaseError(500, `INVALID_DATA_INPUT`);
-    }
-}
-
-const deleteFollow = async(userId, writerId) => {
-    try{
-    const result = await database.query(
-        `
-            DELETE FROM follows
-            WHERE follow_id =?
-            AND follower_id =?
-        `, [userId, writerId]
-    )
-    return result.getAffectdRows()
-    }catch{
-        console.log(err)
-        throw new BaseError(500, `INVALID_DATA_INPUT`);
-    }
-}
-
 
 const getPostDetail = async( postId ) => {
     const result = await database.query(
@@ -266,13 +213,76 @@ const getPostExists = async ( id ) => {
     return result.isExists();
 }
 
+const createPost = async(userId, postData, image) => {
 
+    const queryRunner = appDataSource.createQueryRunner()
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try{
+        const post = await queryRunner.query(
+            `INSERT INTO posts(
+                user_id
+            ) VALUES( ? )
+            `,
+            [userId]
+        )
+
+        const postInfo = await queryRunner.query(
+            `INSERT INTO posts_infomations(
+                room_size_id,
+                residence_id,
+                style_id,
+                space_id,
+                post_id,
+                image,
+                description
+            ) VALUES( ?, ?, ?, ?, ?, ?, ?)
+            `,
+            [postData.size, postData.residence, postData.style, postData.space, post.insertId, image.location, postData.comment]
+        )
+
+        let bulkHastagData = "";
+        for ( i=0; i < postData.hashTag.length; i++){
+            bulkHastagData += `("${postData.hashTag[i]}",${postInfo.insertId}),`
+        }
+    
+        bulkHastagData = bulkHastagData.slice(0,-1)
+    
+        await queryRunner.query(
+            `INSERT INTO hashtags(
+                name,
+                post_info_id
+            ) VALUES` + bulkHastagData
+        )
+        
+        await queryRunner.query(
+            `INSERT INTO posts_products_infomations(
+                post_info_id,
+                product_id,
+                offsetX,
+                offsetY
+            ) VALUES (?,?,?,?)`,
+            [postInfo.insertId, postData.marker.productId, postData.marker.x, postData.marker.y]
+        )
+
+        await queryRunner.commitTransaction()
+
+    } catch(err){
+        console.log(err)
+        await queryRunner.rollbackTransaction();
+        const error = new BaseError(`ROLLBACK : ${err.message}`, 400);
+        throw error;
+
+    } finally {
+        await queryRunner.release();
+    }
+} 
 module.exports = {
-    posts,
-    follows,
-    addFollow,
-    deleteFollow,
+    getPostsList,
+    getFollowsList,
     getPostDetail,
     getHashTag,
-    getPostExists
+    getPostExists,
+    createPost
 }

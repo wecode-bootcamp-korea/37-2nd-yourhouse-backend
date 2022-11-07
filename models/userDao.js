@@ -39,8 +39,59 @@ const getUserById = async ( id ) => {
     return result.fetchOne();
 }
 
+const addFollow = async(userId, writerId) => {
+    const result = await database.query(
+        `INSERT INTO follows(
+            follow_id,
+            follower_id
+        )VALUES (?, ?)`,
+        [userId, writerId]
+    )
+
+    return result.getLastInsertId();
+}
+
+const deleteFollow = async(userId, writerId) => {
+    const result = await database.query(
+        `DELETE FROM follows
+        WHERE follow_id = ?
+        AND follower_id = ?`, 
+        [userId, writerId]
+    )
+
+    return result.getAffectdRows();
+}
+
+const addLike = async(userId, postId) => { 
+    const result = await database.query(
+        `INSERT INTO likes(
+            post_id,
+            user_id
+        )VALUES (?, ?)`,
+        [ postId, userId]
+    )
+
+    return result.getLastInsertId();
+}
+
+const deleteLike = async(userId, postId) => {
+    const result = await database.query(
+        `DELETE FROM likes
+        WHERE user_id = ?
+        AND post_id = ?`,
+        [userId, postId]
+    )
+
+    return result.getAffectdRows();
+}
+
+
 module.exports = {
     createUser,
     getUserToEmail,
-    getUserById
+    getUserById,
+    addFollow,
+    deleteFollow,
+    addLike,
+    deleteLike
 }

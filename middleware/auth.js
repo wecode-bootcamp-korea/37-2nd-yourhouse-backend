@@ -20,7 +20,7 @@ const loginRequired = async (req, res, next) => {
     }
 }
 
-const getuserId = async (req, res, next) => {
+const getUserId = async (req, res, next) => {
     try {
         const token = req.headers.authorization;
         if ( !token ) {
@@ -43,5 +43,5 @@ const getuserId = async (req, res, next) => {
 
 module.exports = { 
     loginRequired,
-    getuserId
+    getUserId
 }
