@@ -1,15 +1,7 @@
-// const express = require('express');
 const multer = require('multer');
 const path = require('path');
-// const fs = require('fs');
 const AWS = require('aws-sdk');
 const multerS3 = require('multer-s3');
-// const pool = require("../../config/database");
-// const { creatPost } = require("./postingController");
-// let router = require('express').Router();
-
-// let address;
-// let uuid = require('uuid/v4');
 
 AWS.config.update({
   accessKeyId: process.env.ACCESS_KEY,
