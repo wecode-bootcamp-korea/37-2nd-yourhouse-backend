@@ -1,6 +1,6 @@
 db/schema.sql
 .env.test
-
+/front
 /config
 
 # Created by https://www.toptal.com/developers/gitignore/api/macos,visualstudiocode,node,git

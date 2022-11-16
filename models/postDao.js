@@ -1,5 +1,5 @@
 const { BaseError } = require("../util/error");
-const { database } = require("./datasource")
+const { database, appDataSource } = require("./datasource")
 
 const getPostsList = async(userId, sort, color, roomsize, residence, style, space, limit, offset )=> {
     const queries ={ userId, sort, color, roomsize, residence, style, space, limit, offset}
