@@ -8,7 +8,7 @@
 
 - 개발기간 : 2022/10/3 ~ 2022/10/13
 - 개발 인원 : 프론트엔드 4명, 백엔드 3명
-- [백엔드 github 링크](https://github.com/wecode-bootcamp-korea/37-2nd-yourhouse-frontend)
+- [프로젝트 회고록 Blog Link](https://velog.io/@kisuk623/1%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9A%8C%EA%B3%A0%EB%A1%9D)
 
 ### 프로젝트 선정이유
 
@@ -17,6 +17,7 @@
 ### 데모 영상
 
 - [유튜브 링크](https://youtu.be/mul_7AIbGnA)
+- [배포 링크](http://yourhome.s3-website.ap-northeast-2.amazonaws.com)
 
 <br>
 
