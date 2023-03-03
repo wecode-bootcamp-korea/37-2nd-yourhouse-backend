@@ -1,24 +1,22 @@
-const { searchDao } = require("../models");
+// const { searchDao } = require("../models");
 
+// const getPostsByNav = async( post ) => {
 
-const getPostsByNav = async( post ) => {
+//     return await searchDao.getPostInfoByNav( post );
+// }
 
-    return await searchDao.getPostInfoByNav( post );
-}
+// const getProducts = async( product ) => {
 
-const getProducts = async( product ) => {
+//     return await searchDao.getProducts( product );
+// }
 
-    return await searchDao.getProducts( product );
-}
+// const getPostLists = async( post, userId ) => {
 
-const getPostLists = async( post, userId ) => {
+//     return await searchDao.getPostLists( post, userId );
+// }
 
-    return await searchDao.getPostLists( post, userId );
-}
-
-
-module.exports = {
-    getPostsByNav,
-    getProducts,
-    getPostLists
-}
+// module.exports = {
+//     getPostsByNav,
+//     getProducts,
+//     getPostLists
+// }

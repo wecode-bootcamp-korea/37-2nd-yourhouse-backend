@@ -1,34 +1,32 @@
-const { profileService } = require("../services");
-const { asyncWrap } = require("../middleware/errorHandler")
+// const { profileService } = require("../services");
+// const { asyncWrap } = require("../middleware/errorHandler")
 
+// const getProfile = asyncWrap( async(req, res) => {
+//     const userId = req.user.id;
 
-const getProfile = asyncWrap( async(req, res) => {
-    const userId = req.user.id;
-    
-    const profile = await profileService.getProfile( userId );
+//     const profile = await profileService.getProfile( userId );
 
-    return res.status(200).json({ profile });
-})
+//     return res.status(200).json({ profile });
+// })
 
-const getMyPosts = asyncWrap( async(req, res) => {
-    const userId = req.user.id;
-    
-    const posts = await profileService.getMyPosts( userId );
+// const getMyPosts = asyncWrap( async(req, res) => {
+//     const userId = req.user.id;
 
-    return res.status(200).json({ posts });
-})
+//     const posts = await profileService.getMyPosts( userId );
 
-const getLikePosts = asyncWrap( async(req, res) => {
-    const userId = req.user.id;
+//     return res.status(200).json({ posts });
+// })
 
-    const posts = await profileService.getLikePosts( userId );
+// const getLikePosts = asyncWrap( async(req, res) => {
+//     const userId = req.user.id;
 
-    return res.status(200).json({ posts });
-})
+//     const posts = await profileService.getLikePosts( userId );
 
+//     return res.status(200).json({ posts });
+// })
 
-module.exports = {
-    getProfile,
-    getMyPosts,
-    getLikePosts
-}
+// module.exports = {
+//     getProfile,
+//     getMyPosts,
+//     getLikePosts
+// }

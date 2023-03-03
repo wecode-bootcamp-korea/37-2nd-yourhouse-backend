@@ -1,6 +1,5 @@
-const getPing = async() => {
-    return
-}
+// const getPing = async() => {
+//     return
+// }
 
-
-module.exports = { getPing }
+// module.exports = { getPing }

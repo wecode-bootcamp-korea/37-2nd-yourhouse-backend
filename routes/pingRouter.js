@@ -1,9 +1,7 @@
-const router = require("express").Router();
+// const router = require("express").Router();
 
-const { pingController } = require("../controllers");
+// const { pingController } = require("../controllers").default;
 
+// router.get("", pingController.getPing);
 
-router.get("", pingController.getPing);
-
-
-module.exports = router;
+// module.exports = router;

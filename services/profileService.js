@@ -1,23 +1,22 @@
-const { profileDao } = require("../models");
+// const { profileDao } = require("../models");
 
-const getProfile = async( userId ) => {
+// const getProfile = async( userId ) => {
 
-    return await profileDao.getProfile( userId );
-}
+//     return await profileDao.getProfile( userId );
+// }
 
-const getMyPosts = async( userId ) => {
+// const getMyPosts = async( userId ) => {
 
-    return await profileDao.getMyPosts( userId );
-}
+//     return await profileDao.getMyPosts( userId );
+// }
 
-const getLikePosts = async( userId ) => {
+// const getLikePosts = async( userId ) => {
 
-    return await profileDao.getLikePosts( userId );
-}
+//     return await profileDao.getLikePosts( userId );
+// }
 
-
-module.exports = { 
-    getProfile,
-    getMyPosts,
-    getLikePosts
-}
+// module.exports = {
+//     getProfile,
+//     getMyPosts,
+//     getLikePosts
+// }

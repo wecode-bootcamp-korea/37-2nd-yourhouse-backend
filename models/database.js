@@ -1,41 +1,41 @@
-class Database {
-    constructor(database) {
-        this.database = database;
-    }
+// class Database {
+//     constructor(database) {
+//         this.database = database;
+//     }
 
-    async query(sql, params) {
-        const result = await this.database.query(sql, params);
+//     async query(sql, params) {
+//         const result = await this.database.query(sql, params);
 
-        return new QueryResultSet(result)
-    }
-}
+//         return new QueryResultSet(result)
+//     }
+// }
 
-class QueryResultSet {
-    constructor(result) {
-        this.result = result;
-    }
+// class QueryResultSet {
+//     constructor(result) {
+//         this.result = result;
+//     }
 
-    fetchOne() {
-        const [row] = this.result;
+//     fetchOne() {
+//         const [row] = this.result;
 
-        return row
-    }
+//         return row
+//     }
 
-    fetchAll() {
-        return this.result;
-    }
+//     fetchAll() {
+//         return this.result;
+//     }
 
-    getLastInsertId() {
-        return this.result.insertId;
-    }
+//     getLastInsertId() {
+//         return this.result.insertId;
+//     }
 
-    getAffectdRows() {
-        return this.result.AffectdRows;
-    }
+//     getAffectdRows() {
+//         return this.result.AffectdRows;
+//     }
 
-    isExists() {
-        return Object.values(this.result[0])[0] === "0" ? false : true
-    }
-}
+//     isExists() {
+//         return Object.values(this.result[0])[0] === "0" ? false : true
+//     }
+// }
 
-module.exports = Database
+// module.exports = Database

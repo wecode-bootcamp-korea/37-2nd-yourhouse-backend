@@ -1,12 +1,10 @@
-const router = require("express").Router();
+// const router = require("express").Router();
 
-const { profileController } = require("../controllers");
-const { loginRequired } = require("../middleware/auth");
+// const { profileController } = require("../controllers").default;
+// const { loginRequired } = require("../middleware/auth");
 
+// router.get("", loginRequired, profileController.getProfile);
+// router.get("/post", loginRequired, profileController.getMyPosts);
+// router.get("/like", loginRequired, profileController.getLikePosts);
 
-router.get("", loginRequired, profileController.getProfile);
-router.get("/post", loginRequired, profileController.getMyPosts);
-router.get("/like", loginRequired, profileController.getLikePosts);
-
-
-module.exports = router;
+// module.exports = router;

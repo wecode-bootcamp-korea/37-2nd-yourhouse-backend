@@ -1,9 +1,9 @@
-class BaseError extends Error {
-    constructor(message, statusCode) {
-        super(message);
-        this.message = message;
-        this.statusCode = statusCode;
-    }
-}
+// class BaseError extends Error {
+//     constructor(message, statusCode) {
+//         super(message);
+//         this.message = message;
+//         this.statusCode = statusCode;
+//     }
+// }
 
-module.exports = { BaseError }
+// module.exports = { BaseError }
