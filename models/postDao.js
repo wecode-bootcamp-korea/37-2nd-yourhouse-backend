@@ -1,63 +1,85 @@
 const { BaseError } = require("../util/error");
-const { database, appDataSource } = require("./datasource")
+const { database, appDataSource } = require("./datasource");
 
-const getPostsList = async(userId, sort, color, roomsize, residence, style, space, limit, offset )=> {
-    const queries ={ userId, sort, color, roomsize, residence, style, space, limit, offset}
-    function filterBuilder(criteria) {
-        let sql = ``;
-        let fieldArr = [];
-        if (criteria.length === 0) return sql;
-        for (var item of criteria) {
-          fieldArr.push(item.value);
-          sql = fieldArr.join(item.condition);
-          fieldArr = [sql];
-        }
-        return ` WHERE ${sql}`;
-      }
-   
-    const criterias = [
-         {
-          field: 'color',
-          value: ` C.id in (`+ String(color) + `)`,
-          condition: ` AND `,
-        },
-        {
-          field: 'roomsize',
-          value: ` PI.room_size_id in (`+ String(roomsize) + `)`,
-          condition: ` AND `,
-        },
-        {
-          field: 'residence',
-          value: ` PI.residence_id in (`+ String(residence) + `)`,
-          condition: ` AND `,
-        },
-        {
-            field: 'style',
-            value: ` PI.style_id in (`+ String(style) + `)`,
-            condition: ` AND `,
-        },
-        {
-          field: 'space',
-          value: ` PI.space_id in (`+ String(space) + `)`,
-          condition: ` AND `,
-        },
-      ];
-  
-    const newCriteria = criterias.filter((cr) => queries.hasOwnProperty(cr.field) && queries[cr.field] !== undefined)
-    
-    const whereClause = filterBuilder(newCriteria)
-    
-    const sortSet = {
-        current : 1,
-        likes : 2
+const getPostsList = async (
+  userId,
+  sort,
+  color,
+  roomsize,
+  residence,
+  style,
+  space,
+  limit,
+  offset
+) => {
+  const queries = {
+    userId,
+    sort,
+    color,
+    roomsize,
+    residence,
+    style,
+    space,
+    limit,
+    offset,
+  };
+  function filterBuilder(criteria) {
+    let sql = ``;
+    let fieldArr = [];
+    if (criteria.length === 0) return sql;
+    for (var item of criteria) {
+      fieldArr.push(item.value);
+      sql = fieldArr.join(item.condition);
+      fieldArr = [sql];
     }
-    if(sort == sortSet.current || !sort){
-        sort =`P.id DESC`
-    }else if(sort == sortSet.likes){
-        sort = `likesNum DESC, P.id DESC`
-    }
-    const result = await database.query(       
-        `SELECT 
+    return ` WHERE ${sql}`;
+  }
+
+  const criterias = [
+    {
+      field: "color",
+      value: ` C.id in (` + String(color) + `)`,
+      condition: ` AND `,
+    },
+    {
+      field: "roomsize",
+      value: ` PI.room_size_id in (` + String(roomsize) + `)`,
+      condition: ` AND `,
+    },
+    {
+      field: "residence",
+      value: ` PI.residence_id in (` + String(residence) + `)`,
+      condition: ` AND `,
+    },
+    {
+      field: "style",
+      value: ` PI.style_id in (` + String(style) + `)`,
+      condition: ` AND `,
+    },
+    {
+      field: "space",
+      value: ` PI.space_id in (` + String(space) + `)`,
+      condition: ` AND `,
+    },
+  ];
+
+  const newCriteria = criterias.filter(
+    (cr) => queries.hasOwnProperty(cr.field) && queries[cr.field] !== undefined
+  );
+
+  const whereClause = filterBuilder(newCriteria);
+
+  const sortSet = {
+    current: 1,
+    likes: 2,
+  };
+  if (sort == sortSet.current || !sort) {
+    sort = `P.id DESC`;
+  } else if (sort == sortSet.likes) {
+    sort = `likesNum DESC, P.id DESC`;
+  }
+  const result = await database.query(
+    `SELECT 
             P.id,
             U1.id writerId,
             U1.description,
@@ -99,20 +121,19 @@ const getPostsList = async(userId, sort, color, roomsize, residence, style, spac
         LEFT JOIN follows as F
         ON F.follower_id = P.user_id
         AND F.follow_id = ?
-        ${ whereClause }
+        ${whereClause}
         GROUP BY P.id
-        ORDER BY ${sort} 
-        limit ?
-        offset ?`,
-        [userId, userId, userId, userId, limit, offset]
-        )
+        limit 20
+        offset 0`,
+    [userId, userId, userId, userId, limit, offset]
+  );
 
-        return result.fetchAll()
-}
+  return result.fetchAll();
+};
 
-const getFollowsList = async(userId, limit, offset) => {
-    const result = await database.query(
-        `SELECT
+const getFollowsList = async (userId, limit, offset) => {
+  const result = await database.query(
+    `SELECT
             P.id AS postId,
             U1.id as writerId,
             U1.profile_image,
@@ -150,15 +171,15 @@ const getFollowsList = async(userId, limit, offset) => {
         ORDER BY P.id DESC 
         limit ?
         offset ?`,
-        [userId, userId, userId, userId, limit, offset]
-    )
+    [userId, userId, userId, userId, limit, offset]
+  );
 
-    return result.fetchAll()
-}
+  return result.fetchAll();
+};
 
-const getPostDetail = async( postId ) => {
-    const result = await database.query(
-        `SELECT
+const getPostDetail = async (postId) => {
+  const result = await database.query(
+    `SELECT
             posts.id AS postId,
             pi.id,
             pi.image AS main_pic_url,
@@ -182,54 +203,53 @@ const getPostDetail = async( postId ) => {
         LEFT JOIN products ON ppi.product_id = products.id
         WHERE posts.id = ?
         GROUP BY pi.id`,
-        [ postId ]
-    )
+    [postId]
+  );
 
-    return result.fetchAll();
-}
+  return result.fetchAll();
+};
 
-const getHashTag = async ( id ) => {
-    const result = await database.query(
-        `SELECT
+const getHashTag = async (id) => {
+  const result = await database.query(
+    `SELECT
             JSON_ARRAYAGG(name) AS hashTag
         FROM hashtags
         WHERE post_info_id = ?`,
-        [ id ]
-    )
+    [id]
+  );
 
-    return result.fetchOne().hashTag;
-}
+  return result.fetchOne().hashTag;
+};
 
-const getPostExists = async ( id ) => {
-    const result = await database.query(
-        `SELECT EXISTS(
+const getPostExists = async (id) => {
+  const result = await database.query(
+    `SELECT EXISTS(
             SELECT
                 *
             FROM posts
             WHERE posts.id = ?) AS result`,
-        [ id ]
-    )
-    
-    return result.isExists();
-}
+    [id]
+  );
 
-const createPost = async(userId, postData, image) => {
+  return result.isExists();
+};
 
-    const queryRunner = appDataSource.createQueryRunner()
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+const createPost = async (userId, postData, image) => {
+  const queryRunner = appDataSource.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
 
-    try{
-        const post = await queryRunner.query(
-            `INSERT INTO posts(
+  try {
+    const post = await queryRunner.query(
+      `INSERT INTO posts(
                 user_id
             ) VALUES( ? )
             `,
-            [userId]
-        )
+      [userId]
+    );
 
-        const postInfo = await queryRunner.query(
-            `INSERT INTO posts_infomations(
+    const postInfo = await queryRunner.query(
+      `INSERT INTO posts_infomations(
                 room_size_id,
                 residence_id,
                 style_id,
@@ -239,50 +259,61 @@ const createPost = async(userId, postData, image) => {
                 description
             ) VALUES( ?, ?, ?, ?, ?, ?, ?)
             `,
-            [postData.size, postData.residence, postData.style, postData.space, post.insertId, image.location, postData.comment]
-        )
+      [
+        postData.size,
+        postData.residence,
+        postData.style,
+        postData.space,
+        post.insertId,
+        image.location,
+        postData.comment,
+      ]
+    );
 
-        let bulkHastagData = "";
-        for ( i=0; i < postData.hashTag.length; i++){
-            bulkHastagData += `("${postData.hashTag[i]}",${postInfo.insertId}),`
-        }
-    
-        bulkHastagData = bulkHastagData.slice(0,-1)
-    
-        await queryRunner.query(
-            `INSERT INTO hashtags(
+    let bulkHastagData = "";
+    for (i = 0; i < postData.hashTag.length; i++) {
+      bulkHastagData += `("${postData.hashTag[i]}",${postInfo.insertId}),`;
+    }
+
+    bulkHastagData = bulkHastagData.slice(0, -1);
+
+    await queryRunner.query(
+      `INSERT INTO hashtags(
                 name,
                 post_info_id
             ) VALUES` + bulkHastagData
-        )
-        
-        await queryRunner.query(
-            `INSERT INTO posts_products_infomations(
+    );
+
+    await queryRunner.query(
+      `INSERT INTO posts_products_infomations(
                 post_info_id,
                 product_id,
                 offsetX,
                 offsetY
             ) VALUES (?,?,?,?)`,
-            [postInfo.insertId, postData.marker.productId, postData.marker.x, postData.marker.y]
-        )
+      [
+        postInfo.insertId,
+        postData.marker.productId,
+        postData.marker.x,
+        postData.marker.y,
+      ]
+    );
 
-        await queryRunner.commitTransaction()
-
-    } catch(err){
-        console.log(err)
-        await queryRunner.rollbackTransaction();
-        const error = new BaseError(`ROLLBACK : ${err.message}`, 400);
-        throw error;
-
-    } finally {
-        await queryRunner.release();
-    }
-} 
+    await queryRunner.commitTransaction();
+  } catch (err) {
+    console.log(err);
+    await queryRunner.rollbackTransaction();
+    const error = new BaseError(`ROLLBACK : ${err.message}`, 400);
+    throw error;
+  } finally {
+    await queryRunner.release();
+  }
+};
 module.exports = {
-    getPostsList,
-    getFollowsList,
-    getPostDetail,
-    getHashTag,
-    getPostExists,
-    createPost
-}
+  getPostsList,
+  getFollowsList,
+  getPostDetail,
+  getHashTag,
+  getPostExists,
+  createPost,
+};
