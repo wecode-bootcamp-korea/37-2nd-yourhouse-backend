@@ -1,6 +1,5 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { PingService } from "../services/PingService";
-import { NextFunction } from "express";
 
 export class PingController {
   private readonly pingService = new PingService();

@@ -2,6 +2,7 @@ db/schema.sql
 .env.test
 /front
 /config
+.idea
 
 # Created by https://www.toptal.com/developers/gitignore/api/macos,visualstudiocode,node,git
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,visualstudiocode,node,git
