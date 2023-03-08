@@ -3,7 +3,7 @@ import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import morgan from "morgan";
 import { router } from "./routes";
-import { dataSource } from "./config/config";
+import { dataSource } from "./config/typeormConfig";
 dotenv.config();
 
 /**
@@ -43,9 +43,7 @@ const createApp = () => {
     if (err.errorCode) {
       res.status(err.status).json(err);
     } else {
-      res
-        .status(err.status || 500)
-        .json({ message: err.message || "ERROR_UNKNOWN" });
+      res.status(err.status || 500).json({ message: err.message || "ERROR_UNKNOWN" });
     }
   });
 

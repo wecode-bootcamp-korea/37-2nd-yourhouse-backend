@@ -1,4 +1,4 @@
-import { dataSource } from "../config/config";
+import { dataSource } from "../config/typeormConfig";
 import { PingEntity } from "../entities/PingEntity";
 
 export class PingRepository {

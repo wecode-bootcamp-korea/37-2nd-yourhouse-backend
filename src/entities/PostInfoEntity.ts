@@ -21,7 +21,7 @@ export class PostInfoEntity {
   @Column({ type: "varchar", comment: "게시글 이미지" })
   image!: string;
 
-  @Column({ type: "varchar", comment: "게시글 내용" })
+  @Column({ type: "varchar", comment: "게시글 내용", nullable: true })
   description!: string;
 
   @Column({ type: "int", comment: "게시글 참조id", name: "post_id" })

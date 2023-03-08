@@ -7,7 +7,7 @@
     "test": "DOTENV_CONFIG_PATH=.env.test jest --setupFiles=dotenv/config",
     "build": "tsc",
     "start": "pm2 dist/src/server.js",
-    "start:dev": "nodemon src/server.ts"
+    "dev": "nodemon src/server.ts"
   },
   "repository": {
     "type": "git",
@@ -35,7 +35,7 @@
     "multer": "^1.4.5-lts.1",
     "multer-s3": "^2.10.0",
     "mysql2": "^2.3.3",
-    "typeorm": "^0.3.10"
+    "typeorm": "^0.3.11"
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",
@@ -48,8 +48,8 @@
     "nodemon": "^2.0.20",
     "sharp": "^0.31.1",
     "supertest": "^6.3.0",
+    "ts-jest": "^29.0.5",
     "ts-node": "^10.9.1",
-    "typeorm": "^0.3.10",
     "typescript": "^4.9.5"
   }
 }

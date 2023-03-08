@@ -21,7 +21,7 @@ export class UserEntity {
   @Column({ type: "varchar", comment: "프로필 이미지" })
   profile_image!: string;
 
-  @Column({ type: "varchar", comment: "자기소개" })
+  @Column({ type: "varchar", comment: "자기소개", nullable: true })
   description!: string;
 
   @OneToMany(() => PostEntity, (posts) => posts.user)

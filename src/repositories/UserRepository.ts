@@ -1,5 +1,5 @@
 import { DeepPartial, FindOneOptions } from "typeorm";
-import { dataSource } from "../config/config";
+import { dataSource } from "../config/typeormConfig";
 import { UserEntity } from "../entities/UserEntity";
 
 export class UserRepository {
