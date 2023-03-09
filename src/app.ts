@@ -13,14 +13,16 @@ const createApp = () => {
   const app = express();
 
   // TypeORM DB 연결
-  dataSource
-    .initialize()
-    .then(() => {
-      console.log("Database initialize!!");
-    })
-    .catch((err) => {
-      console.error(err);
-    });
+  if (process.env.NODE_ENV !== "test") {
+    dataSource
+      .initialize()
+      .then(() => {
+        console.log("Database initialize!!");
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }
 
   app.use(cors());
   app.use(morgan("dev"));

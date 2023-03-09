@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import Joi from "joi";
-import { SignInDto } from "../dtos/SignInDto";
 import { UserService } from "../services/UserService";
 
 export class UserController {
